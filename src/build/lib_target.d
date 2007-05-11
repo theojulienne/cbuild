@@ -2,6 +2,7 @@ module build.lib_target;
 
 import build.targets;
 
+import std.file;
 import std.process;
 
 class LibraryTarget : Target
@@ -18,6 +19,15 @@ class LibraryTarget : Target
 		return name ~ " (Library)";
 	}
 	
+	void doDeps( )
+	{
+		if ( !exists( name ) )
+		{
+			this.markDirty( false );
+			return;
+		}
+	}
+	
 	void runTool( )
 	{
 		char[] cmd;
@@ -31,10 +41,25 @@ class LibraryTarget : Target
 		writefln( "LN %s (not really)", name );
 		
 		char[] pf = "";
+		char[] ext = "";
 		
-		version (macosx) pf = "-dynamiclib";
+		version (macosx)
+		{
+			pf = "-dynamiclib";
+			ext = ".dylib";
+		}
+		version (windows)
+		{
+			pf = "-shared";
+			ext = ".dll";
+		}
+		version (linux)
+		{
+			pf = "-shared";
+			ext = ".so";
+		}
 		
-		cmd = "gcc "~objs~" -o lib"~name~".so "~this.getLDFlags()~" "~pf;
+		cmd = "gcc "~objs~" -o lib"~name~ext~" "~this.getLDFlags()~" "~pf;
 		writefln( ">>> %s", cmd );
 		
 		if ( system( cmd ) != 0 )

@@ -3,6 +3,8 @@ import build.tools;
 import build.projects;
 import build.targets;
 
+import build.options;
+
 import build.app_target;
 import build.lib_target;
 import build.sourcefile;
@@ -10,11 +12,44 @@ import build.sourcefile;
 import parsers.buildinfo;
 
 import std.stdio;
+import std.string;
 
-int main( )
+int main( char[][] args )
 {
-	auto bp = new BuildInfoParser( ".", "BuildInfo" );
+	foreach ( a; args[1..args.length] )
+	{
+		if ( a[0..2] == "--" )
+		{
+			auto arg = a[2..a.length];
+			auto nv = split( arg, "=" );
+			auto arg_name = nv[0];
+			char[] arg_value;
+			
+			if ( nv.length > 1 )
+				arg_value = nv[1];
+			else
+				arg_value = "yes";
+			
+			auto parts = split( arg_name, "-" );
+			
+			if ( parts.length > 1 )
+				arg_value = parts[0];
+			
+			if ( arg_value == "enable" )
+				arg_value = "yes";
+			
+			if ( arg_value == "disable" )
+				arg_value = "no";
+			
+			parts = parts[1..parts.length];
+			arg_name = join( parts, "-" );
+			
+			Option.add( arg_name, arg_value );
+			//writefln( "%s=%s", arg_name, arg_value );
+		}
+	}
 	
+	auto bp = new BuildInfoParser( ".", "BuildInfo" );
 	/*
 	return 0;
 	

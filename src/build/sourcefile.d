@@ -42,6 +42,10 @@ class SourceFile : Target
 	long modificationTime( )
 	{
 		long c, a, m;
+		
+		parent.enterDir( );
+		scope(exit) parent.exitDir( );
+		
 		getTimes( name, c, a, m );
 		
 		return m;

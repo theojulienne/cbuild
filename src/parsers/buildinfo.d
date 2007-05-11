@@ -5,6 +5,8 @@ import build.tools;
 import build.projects;
 import build.targets;
 
+import build.options;
+
 import build.app_target;
 import build.lib_target;
 import build.sourcefile;
@@ -12,6 +14,7 @@ import build.sourcefile;
 import std.stdio;
 import std.stream;
 import std.string;
+import std.file;
 
 version (macosx)
 	char[] target_platform = "darwin";
@@ -85,12 +88,56 @@ class BuildInfoParser
 				char[][] parms = cmd_parts[1..cmd_parts.length];
 				int section_pos = path.length-1;
 				char[] section = path[section_pos];
+				char[] ssection;
+				char[][] exprs;
+				
+				if ( cmd[0] == '(' )
+				{
+					exprs = split( cmd[1..cmd.length-1], "," );
+					cmd = cmd_parts[1];
+					parms = cmd_parts[2..cmd_parts.length];
+					
+					if ( exprs.length > 0 )
+					{
+						bool good = true;
+						
+						foreach ( exp; exprs )
+						{
+							bool negate = exp[0] == '!';
+							
+							if ( negate )
+								exp = exp[1..exp.length];
+						
+							if ( exp == target_platform )
+							{
+								continue;
+							}
+							
+							Option eo = Option.get( exp );
+							
+							if ( eo.value == "yes" )
+							{
+								if ( !negate )
+									continue;
+							}
+						
+							good = false;
+							break;
+						}
+						
+						if ( !good )
+							continue;
+					}
+				}
 				
 				while ( section == "platform" && section_pos > 0 )
 				{
 					section_pos--;
 					section = path[section_pos];
 				}
+				
+				if ( section_pos > 0 )
+					ssection = path[section_pos-1];
 				
 				if ( cmd == "platform" )
 				{
@@ -103,6 +150,7 @@ class BuildInfoParser
 				else if ( section == "info" && cmd == "name" )
 				{
 					proj = new Project( parms[0][1..parms[0].length-1] );
+					proj.path = getcwd( ) ~ "/" ~ dir;
 					if ( !( parent is null ) )
 						parent.addTarget( proj );
 				}
@@ -142,7 +190,7 @@ class BuildInfoParser
 				else if ( section == "sources"  )
 				{
 					//writefln( "Adding source target: %s", dir~"/"~cmd );
-					target.addTarget( new SourceFile( dir~"/"~cmd ) );
+					target.addTarget( new SourceFile( cmd ) );
 				}
 				else if ( section == "flags" && cmd == "include" )
 				{
@@ -151,6 +199,24 @@ class BuildInfoParser
 					if ( foo[1] == '#' )
 						start++;
 					proj.appendCFlags( "-I"~foo[start..foo.length-1] );
+				}
+				else if ( ssection == "options" )
+				{
+					Option opt = Option.get( section );
+					opt.is_real = true;
+					if ( cmd == "description" )
+					{
+						char[] foo = join( parms, " " );
+						opt.description = foo[1..foo.length-1];
+					}
+					else if ( cmd == "default" )
+					{
+						if ( opt.value == "" )
+							opt.value = parms[0];
+						
+						if ( opt.value == "try" )
+							opt.value = "yes";
+					}
 				}
 				else
 				{

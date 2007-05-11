@@ -4,6 +4,7 @@ import build.actions;
 import build.depends;
 
 public import std.stdio;
+import std.file;
 
 abstract class Target
 {
@@ -15,6 +16,46 @@ abstract class Target
 	Target parent;
 	
 	bool dirty;
+	
+	char[] path = ".";
+	char[] old_path;
+	int in_dir = 0;
+	
+	void enterDir( )
+	{
+		in_dir++;
+		
+		if ( in_dir > 1 )
+			return;
+		
+		if ( !( parent is null ) ) parent.enterDir( );
+		
+		if ( path != "." )
+		{
+			old_path = getcwd( );
+			chdir( path );
+
+			writefln( "Entering directory '%s'", path );
+		}
+
+	}
+	
+	void exitDir( )
+	{
+		in_dir--;
+		
+		if ( in_dir > 0 )
+			return;
+		
+		if ( path != "." )
+		{
+			chdir( old_path );
+			writefln( "Leaving directory '%s'", path );
+		}
+		
+		if ( !( parent is null ) ) parent.exitDir( );
+	}
+	
 	
 	/* HACKS! These should be handled differently later! */
 	char[] cflags;
@@ -49,6 +90,21 @@ abstract class Target
 			return ldflags;
 		
 		return parent.getLDFlags() ~ ldflags;
+	}
+	
+	
+	char[][] evals;
+	
+	void addEval( char[] value )
+	{
+		int n = evals.length;
+		evals.length = n + 1;
+		evals[n] = value;
+	}
+	
+	bool evaluate( )
+	{
+		return true;
 	}
 	
 	
@@ -117,6 +173,12 @@ abstract class Target
 	{
 		bool marked_any = false;
 		
+		if ( !evaluate( ) )
+			return false;
+		
+		enterDir( );
+		scope(exit) exitDir( );
+		
 		doDeps( );
 		
 		// if we are dirty, we can't get any worse ;)
@@ -168,6 +230,12 @@ abstract class Target
 	
 	void build( )
 	{
+		if ( !evaluate( ) )
+			return;
+		
+		enterDir( );
+		scope(exit) exitDir( );
+		
 		if ( dirty == false )
 		{
 			version (Debug) writefln( "Skipping clean target: %s", this );
