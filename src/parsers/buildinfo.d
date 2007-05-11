@@ -15,6 +15,11 @@ import std.stdio;
 import std.stream;
 import std.string;
 import std.file;
+import std.process;
+
+import std.c.string;
+import std.c.stdio;
+
 
 version (macosx)
 	char[] target_platform = "darwin";
@@ -24,6 +29,36 @@ version (unix)
 	char[] target_platform = "posix";
 version (windows)
 	char[] target_platform = "win32";
+
+char[] run_pkg_config(char[] args)
+{
+	char[] cmd;
+	int ret;
+	char[] buf;
+	
+    cmd = "pkg-config " ~ args ~ " > .pkg-config.tmp";
+		
+	ret = system(cmd);
+	
+	if ( ret == 1 )
+	{
+		fprintf( stderr, "pkg-config failed for (args: %s)\n", args );
+		return null;
+	}
+	else if ( ret != 0 )
+	{
+		fprintf( stderr, "pkg-config not found or an error occured.\n" );
+		fprintf( stderr, "Try running 'pkg-config' and see if it works.\n" );
+		return null;
+	}
+	
+    buf = cast(char[])std.file.read(".pkg-config.tmp");
+    buf[length-1] = ' ';
+	
+	unlink(".pkg-config.tmp");
+	
+	return buf;
+}
 
 class BuildInfoParser
 {
@@ -188,6 +223,14 @@ class BuildInfoParser
 				{
 					char[] foo = join( parms, " " );
 					proj.appendLDFlags( foo[1..foo.length-1] );
+				}
+				else if ( section == "flags" && cmd == "pkg-config" )
+				{
+				    char[] pkgs = join( parms, " " );
+				    pkgs = pkgs[1..pkgs.length-1];
+				  				    
+				    proj.appendCFlags(run_pkg_config("--cflags " ~ pkgs));
+					proj.appendLDFlags(run_pkg_config("--libs " ~ pkgs));    
 				}
 				else if ( cmd == "none" )
 				{
