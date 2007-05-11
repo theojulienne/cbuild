@@ -1,0 +1,6 @@
+DFLAGS=-g -Isrc/ -fversion=macosx -fversion=Debug
+SRCS=src/cbuild.d src/build/*.d
+APP=cbuild
+
+$(APP): $(SRCS)
+	gdc $(SRCS) -o $(APP) $(DFLAGS)
