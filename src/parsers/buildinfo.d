@@ -195,10 +195,14 @@ class BuildInfoParser
 				else if ( section == "flags" && cmd == "include" )
 				{
 					char[] foo = join( parms, " " );
+					char[] prefix = "";
 					int start = 1;
 					if ( foo[1] == '#' )
+					{
+						prefix = getcwd( ) ~ "/";
 						start++;
-					proj.appendCFlags( "-I"~foo[start..foo.length-1] );
+					}
+					proj.appendCFlags( "-I"~prefix~foo[start..foo.length-1] );
 				}
 				else if ( ssection == "options" )
 				{

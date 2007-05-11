@@ -181,20 +181,23 @@ abstract class Target
 		
 		doDeps( );
 		
-		// if we are dirty, we can't get any worse ;)
+		/*// if we are dirty, we can't get any worse ;)
 		if ( dirty )
-			return false;
+			return false;*/
 		
-		version (Debug) writefln( "Checking on depends for: %s", this );
-		
-		// check out dependancies. if any are dirty, then we are dirty,
-		// so are all our targets.
-		foreach ( dep; depends )
+		if ( !dirty )
 		{
-			if ( dep.isDirty( ) || dep.changedSince( this.modificationTime ) )
+			version (Debug) writefln( "Checking on depends for: %s", this );
+		
+			// check out dependancies. if any are dirty, then we are dirty,
+			// so are all our targets.
+			foreach ( dep; depends )
 			{
-				if ( this.markDirty( ) )
-					marked_any = true;
+				if ( dep.isDirty( ) || dep.changedSince( this.modificationTime ) )
+				{
+					if ( this.markDirty( ) )
+						marked_any = true;
+				}
 			}
 		}
 		
