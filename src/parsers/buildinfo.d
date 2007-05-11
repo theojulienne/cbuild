@@ -107,26 +107,29 @@ class BuildInfoParser
 						
 						foreach ( exp; exprs )
 						{
-							bool negate = exp[0] == '!';
+							bool negate = (exp[0] == '!');
+							char[] expr = exp;
 							
 							if ( negate )
-								exp = exp[1..exp.length];
+								expr = exp[1..exp.length];
 						
-							if ( exp == target_platform )
+							if ( expr == target_platform )
 							{
 								continue;
 							}
 							
-							Option eo = Option.get( exp );
+							Option eo = Option.get( expr );
 							
 							if ( eo.value == "yes" )
 							{
 								if ( !negate )
 									continue;
 							}
-							
-							if ( negate )
-								continue;
+							else
+							{
+								if ( negate )
+									continue;
+							}
 						
 							good = false;
 							break;
