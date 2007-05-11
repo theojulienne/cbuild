@@ -6,6 +6,7 @@ import build.targets;
 import std.stdio;
 import std.string;
 import std.file;
+import std.process;
 
 class SourceFile : Target
 {
@@ -16,11 +17,16 @@ class SourceFile : Target
 	{
 		name = _name;
 		
-		dst = std.string.replace( name, ".c", ".o" );
+		dst = name;
+		dst = std.string.replace( dst, ".c", ".o" );
+		dst = std.string.replace( dst, ".m", ".o" );
 		
 		act = new Action( );
 		act["src"] = name;
 		act["dst"] = dst;
+		
+		if ( act["src"] == act["dst"] )
+			throw new Exception( "source and destination the same for source target!" );
 	}
 	
 	char[] toString( )
@@ -61,7 +67,15 @@ class SourceFile : Target
 	
 	void runTool( )
 	{
+		char cmd[];
+		
 		writefln( "CC %s (not really)", name );
+		
+		cmd = "gcc -c "~act["src"]~" -o "~act["dst"]~" "~this.getCFlags();
+		writefln( ">>> %s", cmd );
+		
+		if ( system( cmd ) != 0 )
+			throw new Exception( "gcc returned error during source compile" );
 	}
 	
 	char[] target( ) { return dst; }

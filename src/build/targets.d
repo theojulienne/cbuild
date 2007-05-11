@@ -12,13 +12,52 @@ abstract class Target
 	Depend depends[];
 	Target targets[];
 	
+	Target parent;
+	
 	bool dirty;
+	
+	/* HACKS! These should be handled differently later! */
+	char[] cflags;
+	char[] ldflags;
+	
+	/* This is a hack. Tools/actions will handle this later. */
+	void appendCFlags( char[] flags )
+	{
+		cflags ~= " ";
+		cflags ~= flags;
+	}
+	
+	/* This is a hack. Tools/actions will handle this later. */
+	void appendLDFlags( char[] flags )
+	{
+		ldflags ~= " ";
+		ldflags ~= flags;
+	}
+	
+	
+	char[] getCFlags( )
+	{
+		if ( this.parent is null )
+			return cflags;
+		
+		return parent.getCFlags() ~ cflags;
+	}
+	
+	char[] getLDFlags( )
+	{
+		if ( this.parent is null )
+			return ldflags;
+		
+		return parent.getLDFlags() ~ ldflags;
+	}
+	
 	
 	void addTarget( Target t )
 	{
 		int a = targets.length;
 		targets.length = a + 1;
 		targets[a] = t;
+		t.parent = this;
 	}
 	
 	void addDepend( Depend d )

@@ -1,5 +1,5 @@
 DFLAGS=-g -Isrc/ -fversion=macosx -fversion=Debug
-SRCS=src/cbuild.d src/build/*.d
+SRCS=src/cbuild.d src/build/*.d src/parsers/*.d
 APP=cbuild
 
 $(APP): $(SRCS)

@@ -7,10 +7,17 @@ import build.app_target;
 import build.lib_target;
 import build.sourcefile;
 
+import parsers.buildinfo;
+
 import std.stdio;
 
 int main( )
 {
+	auto bp = new BuildInfoParser( ".", "BuildInfo" );
+	
+	/*
+	return 0;
+	
 	Project p = new Project( "claro" );
 	
 	auto b = new Project( "base" );
@@ -36,7 +43,9 @@ int main( )
 	
 	gt.addTarget( new SourceFile( "src/claro/graphics/widget.c") );
 	gt.addTarget( new SourceFile( "src/claro/graphics/widgets/stock.c") );
+	*/
 	
+	auto p = bp.proj;
 	
 	version (Debug) writefln( "Processing deps and marking dirty targets..." );
 	int n;
