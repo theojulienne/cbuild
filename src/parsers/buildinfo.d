@@ -120,6 +120,9 @@ class BuildInfoParser
 								if ( !negate )
 									continue;
 							}
+							
+							if ( negate )
+								continue;
 						
 							good = false;
 							break;
