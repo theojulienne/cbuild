@@ -1,0 +1,10 @@
+# -fversion=linux implicit (?)
+
+DFLAGS=-g -Isrc/ -fversion=Debug
+SRCS=src/cbuild.d src/build/*.d src/parsers/*.d
+APP=cbuild
+
+$(APP): $(SRCS)
+	gdc $(SRCS) -o $(APP) $(DFLAGS)
+	
+	
