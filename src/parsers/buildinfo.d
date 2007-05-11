@@ -18,6 +18,12 @@ import std.file;
 
 version (macosx)
 	char[] target_platform = "darwin";
+version (linux)
+	char[] target_platform = "posix";
+version (unix)
+	char[] target_platform = "posix";
+version (windows)
+	char[] target_platform = "win32";
 
 class BuildInfoParser
 {
@@ -73,8 +79,6 @@ class BuildInfoParser
 				
 				if ( path.length <= skip_breakout )
 					skipping = false;
-				else
-					continue;
 			}
 			
 			if ( skipping )
@@ -152,7 +156,8 @@ class BuildInfoParser
 				}
 				else if ( section == "info" && cmd == "name" )
 				{
-					proj = new Project( parms[0][1..parms[0].length-1] );
+					char[] foo = join( parms, " " );
+					proj = new Project( foo[1..foo.length-1] );
 					proj.path = getcwd( ) ~ "/" ~ dir;
 					if ( !( parent is null ) )
 						parent.addTarget( proj );
@@ -190,6 +195,11 @@ class BuildInfoParser
 					target = new LibraryTarget( parms[0] );
 					proj.addTarget( target );
 				}
+				else if ( section == "targets" && cmd == "application")
+				{
+					target = new ApplicationTarget( parms[0] );
+					proj.addTarget( target );
+				}
 				else if ( section == "sources"  )
 				{
 					//writefln( "Adding source target: %s", dir~"/"~cmd );
@@ -206,6 +216,22 @@ class BuildInfoParser
 						start++;
 					}
 					proj.appendCFlags( "-I"~prefix~foo[start..foo.length-1] );
+				}
+				else if ( section == "flags" && cmd == "libdir" )
+				{
+					char[] foo = join( parms, " " );
+					char[] prefix = "";
+					int start = 1;
+					if ( foo[1] == '^' )
+					{
+						prefix = getcwd( ) ~ "/";
+						start++;
+					}
+					proj.appendLDFlags( "-L"~prefix~foo[start..foo.length-1] );
+				}
+				else if ( section == "flags" && cmd == "library" )
+				{
+					proj.appendLDFlags( "-l"~parms[0][1..parms[0].length-1] );
 				}
 				else if ( ssection == "options" )
 				{

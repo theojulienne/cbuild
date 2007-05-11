@@ -73,7 +73,7 @@ class SourceFile : Target
 	{
 		char cmd[];
 		
-		writefln( "CC %s (not really)", name );
+		writefln( "CC %s", name );
 		
 		cmd = "gcc -c "~act["src"]~" -o "~act["dst"]~" "~this.getCFlags();
 		writefln( ">>> %s", cmd );

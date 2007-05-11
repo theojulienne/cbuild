@@ -38,7 +38,7 @@ class LibraryTarget : Target
 			objs ~= " ";
 		}
 		
-		writefln( "LN %s (not really)", name );
+		writefln( "LN %s", name );
 		
 		char[] pf = "";
 		char[] ext = "";
