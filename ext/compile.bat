@@ -1,1 +1,3 @@
-echo "cbuild caller for windows"
+@echo off
+set DIR=%~dp0
+%DIR%binaries\cbuild %*
