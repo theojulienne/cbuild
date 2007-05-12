@@ -7,6 +7,9 @@ case "$OS" in
 	"Darwin")
 		TARGET="darwin"
 		;;
+	"Linux")
+	    TARGET="linux"
+	    ;;	
 	*)
 		echo "Sorry, I don't understand the OS 'uname' returned: $OS"
 		exit 1
