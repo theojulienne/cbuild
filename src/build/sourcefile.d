@@ -12,7 +12,17 @@ class SourceFile : Target
 {
 	char name[];
 	char dst[];
-	
+
+    static char[][char[]] source_handlers; 	
+    
+    static this()
+    {
+        source_handlers[".c"] = "gcc";
+        source_handlers[".d"] = "gdc";
+        source_handlers[".cpp"] = "g++";
+        source_handlers[".cxx"] = "g++";
+    }
+
 	this( char[] _name )
 	{
 		name = _name;
@@ -69,13 +79,25 @@ class SourceFile : Target
 		}
 	}
 	
+    private char[] getTool()
+    {
+        char[] src = act["src"];
+        int i = rfind(src, ".");
+        if(!i)
+           throw new Exception( "Could not determine file type for \"" ~ src ~ "\"." );     
+        char[] extension = src[i..src.length];    
+        return source_handlers[extension];    
+    }
+
 	void runTool( )
 	{
 		char cmd[];
+		char[] tool = getTool();
+
+        //FIXME
+		writefln( "COMPILE %s", name );
 		
-		writefln( "CC %s", name );
-		
-		cmd = "gcc -c "~act["src"]~" -o "~act["dst"]~" "~this.getCFlags();
+		cmd = tool ~ " -c "~act["src"]~" -o "~act["dst"]~" "~this.getCFlags();
 		writefln( ">>> %s", cmd );
 		
 		if ( system( cmd ) != 0 )
