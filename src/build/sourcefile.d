@@ -29,8 +29,11 @@ class SourceFile : Target
 		name = _name;
 		
 		dst = name;
-		dst = std.string.replace( dst, ".c", ".o" );
-		dst = std.string.replace( dst, ".m", ".o" );
+		
+		foreach ( ext, cpl; source_handlers )
+		{
+			dst = std.string.replace( dst, ext, ".o" );
+		}
 		
 		act = new Action( );
 		act["src"] = name;
@@ -102,7 +105,26 @@ class SourceFile : Target
 		writefln( ">>> %s", cmd );
 		
 		if ( system( cmd ) != 0 )
-			throw new Exception( "gcc returned error during source compile" );
+			throw new Exception( tool ~ " returned error during source compile" );
+	}
+	
+	void runClean( )
+	{
+		char cmd[];
+
+        //FIXME
+		writefln( "CLEAN %s", act["dst"] );
+		
+		if ( !exists( act["dst"] ) )
+			return;
+		
+		cmd = "rm";
+		version (Windows) cmd = "del";
+		cmd ~= " " ~ act["dst"];
+		writefln( ">>> %s", cmd );
+		
+		if ( system( cmd ) != 0 )
+			throw new Exception( "could not remove file" );
 	}
 	
 	char[] target( ) { return dst; }

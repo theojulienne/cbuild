@@ -16,6 +16,8 @@ import std.string;
 
 int main( char[][] args )
 {
+	bool is_clean = false;
+	
 	foreach ( a; args[1..args.length] )
 	{
 		if ( a[0..2] == "--" )
@@ -46,6 +48,10 @@ int main( char[][] args )
 			
 			Option.add( arg_name, arg_value );
 			//writefln( "%s=%s", arg_name, arg_value );
+		}
+		else if ( a == "clean" )
+		{
+			is_clean = true;
 		}
 	}
 	
@@ -105,7 +111,11 @@ int main( char[][] args )
 		
 		writefln( "Now going to build..." );
 	}
-	p.build( );
+	
+	if ( is_clean )
+		p.clean( );
+	else
+		p.build( );
 	
 	return 0;
 }

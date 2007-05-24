@@ -231,6 +231,27 @@ abstract class Target
 		
 	}
 	
+	void clean( )
+	{
+		if ( !evaluate( ) )
+			return;
+		
+		enterDir( );
+		scope(exit) exitDir( );
+		
+		foreach ( d; depends )
+		{
+			d.clean( );
+		}
+		
+		foreach ( t; targets )
+		{
+			t.clean( );
+		}
+		
+		this.runClean( );
+	}
+	
 	void build( )
 	{
 		if ( !evaluate( ) )
@@ -267,6 +288,11 @@ abstract class Target
 	void runTool( )
 	{
 		version (Debug) writefln( "Came back to Target class for runTool, doing nothing: %s", this );
+	}
+	
+	void runClean( )
+	{
+		version (Debug) writefln( "Came back to Target class for runClean, doing nothing: %s", this );
 	}
 	
 	char[] info( )

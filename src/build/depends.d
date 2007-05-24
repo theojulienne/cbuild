@@ -14,6 +14,11 @@ abstract class Depend
 		
 	}
 	
+	void clean( )
+	{
+		
+	}
+	
 	long modificationTime( )
 	{
 		return 0;
