@@ -186,7 +186,18 @@ class BuildInfoParser
 				
 				if ( cmd == "platform" )
 				{
-					if ( parms[0] != target_platform && parms[0] != "all" )
+					bool skip = (parms[0] != target_platform && parms[0] != "all");
+					
+					if ( skip )
+					{
+						if ( parms[0][0] == '!' )
+						{
+							// negate, skip if param is target
+							skip = ( parms[0][1..length] == target_platform );
+						}
+					}
+					
+					if ( skip )
 					{
 						skipping = true;
 						skip_breakout = path.length;
