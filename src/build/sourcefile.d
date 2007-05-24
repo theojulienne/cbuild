@@ -46,7 +46,7 @@ class SourceFile : Target
 		int i = rfind( act["src"], "." );
 		if ( i > 0 )
 		{
-			type = act["src"][i..length] ~ "-source";
+			type = act["src"][i+1..length] ~ "-source";
 		}
 	}
 	
