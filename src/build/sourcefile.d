@@ -18,6 +18,7 @@ class SourceFile : Target
     static this()
     {
         source_handlers[".c"] = "gcc";
+		source_handlers[".m"] = "gcc";
         source_handlers[".d"] = "gdc";
         source_handlers[".cpp"] = "g++";
         source_handlers[".cxx"] = "g++";

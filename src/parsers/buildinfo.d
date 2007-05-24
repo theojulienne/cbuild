@@ -267,7 +267,7 @@ class BuildInfoParser
 					char[] foo = join( parms, " " );
 					char[] prefix = "";
 					int start = 1;
-					if ( foo[1] == '#' )
+					if ( foo[1] == '^' || foo[1] == '#' )
 					{
 						prefix = getcwd( ) ~ "/";
 						start++;
@@ -279,7 +279,7 @@ class BuildInfoParser
 					char[] foo = join( parms, " " );
 					char[] prefix = "";
 					int start = 1;
-					if ( foo[1] == '^' )
+					if ( foo[1] == '^' || foo[1] == '#' )
 					{
 						prefix = getcwd( ) ~ "/";
 						start++;
