@@ -21,7 +21,7 @@ class LibraryTarget : Target
 	
 	void doDeps( )
 	{
-		if ( !exists( name ) )
+		if ( !exists( getDestFile( ) ) )
 		{
 			this.markDirty( false );
 			return;
