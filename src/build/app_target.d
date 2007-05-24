@@ -28,6 +28,17 @@ class ApplicationTarget : Target
 		}
 	}
 	
+	char[] getExt( )
+	{
+		version (windows) return ".exe";
+		return "";
+	}
+	
+	char[] getDestFile( )
+	{
+		return name~getExt();
+	}
+	
 	void runTool( )
 	{
 		char[] cmd;
@@ -40,18 +51,29 @@ class ApplicationTarget : Target
 		
 		writefln( "LN %s", name );
 		
-		char[] pf = "";
-		char[] ext = "";
+		char[] dest = getDestFile( );
 		
-		version (windows)
-		{
-			ext = ".exe";
-		}
-		
-		cmd = "gcc "~objs~" -o "~name~ext~" "~this.getLDFlags()~" "~pf;
+		cmd = "gcc "~objs~" -o "~dest~" "~this.getLDFlags();
 		writefln( ">>> %s", cmd );
 		
 		if ( system( cmd ) != 0 )
 			throw new Exception( "gcc returned error during building" );
+	}
+	
+	void runClean( )
+	{
+		char[] dest = getDestFile( );
+		char[] cmd = "";
+		
+		writefln( "CLEAN %s", dest );
+		
+		cmd = "rm";
+		version (Windows) cmd = "del";
+		
+		cmd ~= " " ~ dest;
+		writefln( ">>> %s", cmd );
+		
+		if ( system( cmd ) != 0 )
+			throw new Exception( "could not remove destination file "~dest );
 	}
 }

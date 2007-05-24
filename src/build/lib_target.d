@@ -28,6 +28,24 @@ class LibraryTarget : Target
 		}
 	}
 	
+	char[] getExt( )
+	{
+		version (macosx) return ".dylib";
+		version (windows) return ".dll";
+		return ".so";
+	}
+	
+	char[] getFlags( )
+	{
+		version (macosx) return "-dynamiclib";
+		return "-shared";
+	}
+	
+	char[] getDestFile( )
+	{
+		return "lib"~name~getExt();
+	}
+	
 	void runTool( )
 	{
 		char[] cmd;
@@ -40,29 +58,30 @@ class LibraryTarget : Target
 		
 		writefln( "LN %s", name );
 		
-		char[] pf = "";
-		char[] ext = "";
+		char[] pf = getFlags( );
+		char[] dest = getDestFile( );
 		
-		version (macosx)
-		{
-			pf = "-dynamiclib";
-			ext = ".dylib";
-		}
-		version (windows)
-		{
-			pf = "-shared";
-			ext = ".dll";
-		}
-		version (linux)
-		{
-			pf = "-shared";
-			ext = ".so";
-		}
-		
-		cmd = "gcc "~objs~" -o lib"~name~ext~" "~this.getLDFlags()~" "~pf;
+		cmd = "gcc "~objs~" -o "~dest~" "~this.getLDFlags()~" "~pf;
 		writefln( ">>> %s", cmd );
 		
 		if ( system( cmd ) != 0 )
 			throw new Exception( "gcc returned error during linking" );
+	}
+	
+	void runClean( )
+	{
+		char[] dest = getDestFile( );
+		char[] cmd = "";
+		
+		writefln( "CLEAN %s", dest );
+		
+		cmd = "rm";
+		version (Windows) cmd = "del";
+		
+		cmd ~= " " ~ dest;
+		writefln( ">>> %s", cmd );
+		
+		if ( system( cmd ) != 0 )
+			throw new Exception( "could not remove destination file "~dest );
 	}
 }
