@@ -52,8 +52,19 @@ class ApplicationTarget : Target
 		writefln( "LN %s", name );
 		
 		char[] dest = getDestFile( );
+		char[] app = "gcc";
 		
-		cmd = "gcc "~objs~" -o "~dest~" "~this.getLDFlags();
+		// HACK: if any sources are d, use gdc to link
+		foreach ( t; targets )
+		{
+			if ( t.filetype == "d-source" )
+			{
+				app = "gdc";
+				break;
+			}
+		}
+		
+		cmd = app~" "~objs~" -o "~dest~" "~this.getLDFlags();
 		writefln( ">>> %s", cmd );
 		
 		if ( system( cmd ) != 0 )

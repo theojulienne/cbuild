@@ -11,6 +11,7 @@ import std.process;
 class SourceFile : Target
 {
 	char name[];
+	char type[] = "unknown-source";
 	char dst[];
 
     static char[][char[]] source_handlers; 	
@@ -41,6 +42,17 @@ class SourceFile : Target
 		
 		if ( act["src"] == act["dst"] )
 			throw new Exception( "source and destination the same for source target!" );
+		
+		int i = rfind( act["src"], "." );
+		if ( i > 0 )
+		{
+			type = act["src"][i..length] ~ "-source";
+		}
+	}
+	
+	char[] filetype( )
+	{
+		return type;
 	}
 	
 	char[] toString( )

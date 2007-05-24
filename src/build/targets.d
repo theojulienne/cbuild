@@ -308,4 +308,9 @@ abstract class Target
 	char[] target( ) {
 		return "";
 	}
+	
+	char[] filetype( )
+	{
+		return "";
+	}
 }
