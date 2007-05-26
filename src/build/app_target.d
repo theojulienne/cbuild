@@ -78,6 +78,9 @@ class ApplicationTarget : Target
 		char[] dest = getDestFile( );
 		char[] cmd = "";
 		
+		if ( !exists( dest ) )
+			return;
+		
 		writefln( "CLEAN %s", dest );
 		
 		cmd = "rm";
