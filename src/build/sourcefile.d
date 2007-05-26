@@ -125,11 +125,11 @@ class SourceFile : Target
 	{
 		char cmd[];
 
-        //FIXME
-		writefln( "CLEAN %s", act["dst"] );
-		
 		if ( !exists( act["dst"] ) )
 			return;
+
+        //FIXME
+		writefln( "CLEAN %s", act["dst"] );
 		
 		cmd = "rm";
 		version (Windows) cmd = "del";
