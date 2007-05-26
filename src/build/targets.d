@@ -2,6 +2,7 @@ module build.targets;
 
 import build.actions;
 import build.depends;
+import build.comm;
 
 public import std.stdio;
 import std.file;
@@ -35,7 +36,7 @@ abstract class Target
 			old_path = getcwd( );
 			chdir( path );
 
-			writefln( "Entering directory '%s'", path );
+			writeDebugf( "Entering directory '%s'", path );
 		}
 
 	}
@@ -50,7 +51,7 @@ abstract class Target
 		if ( path != "." )
 		{
 			chdir( old_path );
-			writefln( "Leaving directory '%s'", path );
+			writeDebugf( "Leaving directory '%s'", path );
 		}
 		
 		if ( !( parent is null ) ) parent.exitDir( );
@@ -131,15 +132,15 @@ abstract class Target
 		for ( auto a = 0; a < ind; a++ )
 			indent[a] = ' ';
 		
-		writefln( "%s%s", indent, this );
+		writeDebugf( "%s%s", indent, this );
 		
-		writefln( "%s  info:", indent );
-		writefln( "%s    dirty=%s", indent, dirty );
-		writefln( "%s    mtime=%s", indent, this.modificationTime );
-		writefln( "%s    %s", indent, this.info() );
-		writefln( "%s  depends:", indent );
+		writeDebugf( "%s  info:", indent );
+		writeDebugf( "%s    dirty=%s", indent, dirty );
+		writeDebugf( "%s    mtime=%s", indent, this.modificationTime );
+		writeDebugf( "%s    %s", indent, this.info() );
+		writeDebugf( "%s  depends:", indent );
 		
-		writefln( "%s  targets:", indent );
+		writeDebugf( "%s  targets:", indent );
 		
 		foreach ( t; targets )
 		{
@@ -187,7 +188,7 @@ abstract class Target
 		
 		if ( !dirty )
 		{
-			version (Debug) writefln( "Checking on depends for: %s", this );
+			version (Debug) writeDebugf( "Checking on depends for: %s", this );
 		
 			// check out dependancies. if any are dirty, then we are dirty,
 			// so are all our targets.
@@ -262,18 +263,18 @@ abstract class Target
 		
 		if ( dirty == false )
 		{
-			version (Debug) writefln( "Skipping clean target: %s", this );
+			version (Debug) writeDebugf( "Skipping clean target: %s", this );
 			return;
 		}
 		
-		version (Debug) writefln( "Building all depends for: %s", this );
+		version (Debug) writeDebugf( "Building all depends for: %s", this );
 		
 		foreach ( d; depends )
 		{
 			d.build( );
 		}
 		
-		version (Debug) writefln( "Building all targets for: %s", this );
+		version (Debug) writeDebugf( "Building all targets for: %s", this );
 		
 		foreach ( t; targets )
 		{
@@ -287,12 +288,12 @@ abstract class Target
 	
 	void runTool( )
 	{
-		version (Debug) writefln( "Came back to Target class for runTool, doing nothing: %s", this );
+		version (Debug) writeDebugf( "Came back to Target class for runTool, doing nothing: %s", this );
 	}
 	
 	void runClean( )
 	{
-		version (Debug) writefln( "Came back to Target class for runClean, doing nothing: %s", this );
+		version (Debug) writeDebugf( "Came back to Target class for runClean, doing nothing: %s", this );
 	}
 	
 	char[] info( )

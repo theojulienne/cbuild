@@ -2,6 +2,7 @@ module build.sourcefile;
 
 import build.actions;
 import build.targets;
+import build.comm;
 
 import std.stdio;
 import std.string;
@@ -90,7 +91,7 @@ class SourceFile : Target
 		
 		if ( m < this.modificationTime )
 		{
-			version (Debug) writefln( "Source file '%s' updated", name );
+			version (Debug) writeDebugf( "Source file '%s' updated", name );
 			this.markDirty( true );
 		}
 	}
@@ -114,7 +115,7 @@ class SourceFile : Target
 		writefln( "COMPILE %s", name );
 		
 		cmd = tool ~ " -c "~act["src"]~" -o "~act["dst"]~" "~this.getCFlags();
-		writefln( ">>> %s", cmd );
+		writeDebugf( ">>> %s", cmd );
 		
 		if ( system( cmd ) != 0 )
 			throw new Exception( tool ~ " returned error during source compile" );
@@ -133,7 +134,7 @@ class SourceFile : Target
 		cmd = "rm";
 		version (Windows) cmd = "del";
 		cmd ~= " " ~ act["dst"];
-		writefln( ">>> %s", cmd );
+		writeDebugf( ">>> %s", cmd );
 		
 		if ( system( cmd ) != 0 )
 			throw new Exception( "could not remove file" );

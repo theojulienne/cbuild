@@ -14,13 +14,19 @@ import parsers.buildinfo;
 import std.stdio;
 import std.string;
 
+import build.comm;
+
 int main( char[][] args )
 {
 	bool is_clean = false;
 	
 	foreach ( a; args[1..args.length] )
 	{
-		if ( a[0..2] == "--" )
+		if ( a == "-v" )
+		{
+			debug_quiet = false;
+		}
+		else if ( a[0..2] == "--" )
 		{
 			auto arg = a[2..a.length];
 			auto nv = split( arg, "=" );

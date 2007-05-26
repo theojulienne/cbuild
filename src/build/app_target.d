@@ -5,6 +5,8 @@ import build.targets;
 import std.file;
 import std.process;
 
+import build.comm;
+
 class ApplicationTarget : Target
 {
 	char name[];
@@ -65,7 +67,7 @@ class ApplicationTarget : Target
 		}
 		
 		cmd = app~" "~objs~" -o "~dest~" "~this.getLDFlags();
-		writefln( ">>> %s", cmd );
+		writeDebugf( ">>> %s", cmd );
 		
 		if ( system( cmd ) != 0 )
 			throw new Exception( "gcc returned error during building" );
@@ -82,7 +84,7 @@ class ApplicationTarget : Target
 		version (Windows) cmd = "del";
 		
 		cmd ~= " " ~ dest;
-		writefln( ">>> %s", cmd );
+		writeDebugf( ">>> %s", cmd );
 		
 		if ( system( cmd ) != 0 )
 			throw new Exception( "could not remove destination file "~dest );
