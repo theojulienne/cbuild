@@ -10,6 +10,7 @@ import build.options;
 import build.app_target;
 import build.lib_target;
 import build.sourcefile;
+import build.comm;
 
 import std.stdio;
 import std.stream;
@@ -214,11 +215,11 @@ class BuildInfoParser
 				else if ( section == "info" && cmd == "description" )
 				{
 					char[] foo = join( parms, " " );
-					writefln( "%s is '%s'", proj.name, foo[1..foo.length-1] );
+					writeDebugf( "%s is '%s'", proj.name, foo[1..foo.length-1] );
 				}
 				else if ( section == "contains" && cmd == "recurse" )
 				{
-					writefln( "Contains another project '%s' in '%s'", parms[0], parms[1] );
+					writeDebugf( "Contains another project '%s' in '%s'", parms[0], parms[1] );
 					BuildInfoParser bp = new BuildInfoParser( dir~"/"~parms[1], filename, proj );
 				}
 				else if ( section == "flags" && cmd == "define" )
