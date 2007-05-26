@@ -94,28 +94,28 @@ int main( char[][] args )
 	
 	auto p = bp.proj;
 	
-	version (Debug) writefln( "Processing deps and marking dirty targets..." );
+	version (Debug) writeDebugf( "Processing deps and marking dirty targets..." );
 	int n;
 	for ( n = 0; n < 10; n++ )
 	{
-		version (Debug) writefln( "[dep %d] running... ", n );
+		version (Debug) writeDebugf( "[dep %d] running... ", n );
 		
 		// deps will return true if it changes anything.
 		// if false is returned, we're finished checking deps.
 		if ( p.deps( ) == false )
 			break;
 		
-		version (Debug) writefln( "[dep %d] completed.", n );
+		version (Debug) writeDebugf( "[dep %d] completed.", n );
 	}
 	
 	version (Debug)
 	{
-		writefln( "Depends completed in %d checks.", n+1 );
+		writeDebugf( "Depends completed in %d checks.", n+1 );
 		
-		writefln( "Here's what we have..." );
+		writeDebugf( "Here's what we have..." );
 		p.displayTree( );
 		
-		writefln( "Now going to build..." );
+		writeDebugf( "Now going to build..." );
 	}
 	
 	if ( is_clean )
