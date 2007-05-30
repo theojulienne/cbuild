@@ -81,7 +81,11 @@ class LibraryTarget : Target
 		writefln( "CLEAN %s", dest );
 		
 		cmd = "rm";
-		version (Windows) cmd = "del";
+		version (Windows)
+		{
+			cmd = "del";
+			dest = std.string.replace( dest, "/", "\\" );
+		}
 		
 		cmd ~= " " ~ dest;
 		writeDebugf( ">>> %s", cmd );

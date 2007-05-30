@@ -132,7 +132,11 @@ class SourceFile : Target
 		writefln( "CLEAN %s", act["dst"] );
 		
 		cmd = "rm";
-		version (Windows) cmd = "del";
+		version (Windows)
+		{
+			cmd = "del";
+			act["dst"] = std.string.replace( act["dst"], "/", "\\" );
+		}
 		cmd ~= " " ~ act["dst"];
 		writeDebugf( ">>> %s", cmd );
 		
