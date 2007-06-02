@@ -31,34 +31,58 @@ version (unix)
 version (windows)
 	char[] target_platform = "win32";
 
+extern (C)
+{
+    _iobuf * popen(char*, char*);
+    int pclose(_iobuf*);
+}
+
 char[] run_pkg_config(char[] args)
 {
+    static char[][char[]] _pkgs;
+
 	char[] cmd;
 	int ret;
 	char[] buf;
+    FILE * f;
 	
-    cmd = "pkg-config " ~ args ~ " > .pkg-config.tmp";
+    if(args in _pkgs)
+        return _pkgs[args];    
+    
+    cmd = "pkg-config " ~ args;
 		
-	ret = system(cmd);
-	
-	if ( ret == 1 )
+    f = popen(cmd.ptr, "r".ptr);
+
+	if ( f == null )
 	{
 		fprintf( stderr, "pkg-config failed for (args: %s)\n", args );
 		return null;
 	}
-	else if ( ret != 0 )
+	
+    buf = new char[1024];
+
+    ret = fread(cast(void*)buf.ptr, 1, 1024, f);
+    
+    if ( ret <= 0 )
 	{
 		fprintf( stderr, "pkg-config not found or an error occured.\n" );
 		fprintf( stderr, "Try running 'pkg-config' and see if it works.\n" );
 		return null;
 	}
+
+    buf = buf[0..ret];
+
+    ret = pclose(f);    
 	
-    buf = cast(char[])std.file.read(".pkg-config.tmp");
-    buf[length-1] = ' ';
-	
-	unlink(".pkg-config.tmp");
-	
-	return buf;
+    if ( ret < 0 )
+	{
+		fprintf( stderr, "pkg-config not found or an error occured.\n" );
+		fprintf( stderr, "Try running 'pkg-config' and see if it works.\n" );
+		return null;
+	}
+
+    _pkgs[args] = buf;
+    return buf;
 }
 
 class BuildInfoParser
