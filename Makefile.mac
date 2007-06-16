@@ -1,4 +1,4 @@
-DFLAGS=-g -Isrc/ -fversion=macosx -fversion=Debug
+DFLAGS=-g -Isrc/ -fversion=macosx -fversion=Debug -arch i386 -arch ppc
 SRCS=src/cbuild.d src/build/*.d src/parsers/*.d
 APP=cbuild
 
