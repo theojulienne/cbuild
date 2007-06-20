@@ -64,11 +64,11 @@ class LibraryTarget : Target
 		char[] dest = getDestFile( );
 		
 		cmd = "gcc "~objs~" -o "~dest~" "~pf~" "~this.getLDFlags();
-		writefln( ">>> %s", cmd );
+        writeDebugf( ">>> %s", cmd );
 		
-		if ( system( cmd ) != 0 )
-			throw new Exception( "gcc returned error during linking" );
-
+        if ( system( cmd ) != 0 )
+            throw new Exception( "gcc returned error during linking" );
+        
         writefln("AR %s", name);
 
         cmd = "ar rs lib" ~ name ~ ".a " ~ objs;

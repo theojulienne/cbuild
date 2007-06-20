@@ -73,7 +73,10 @@ abstract class Target
 	void appendLDFlags( char[] flags )
 	{
 		ldflags ~= " ";
-		ldflags ~= flags;
+        if(flags[length-1] == '\r' || flags[length-1] == '\n')
+            ldflags ~= flags[0..length-2];
+        else
+            ldflags ~= flags;
 	}
 	
 	

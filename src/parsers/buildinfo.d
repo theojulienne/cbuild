@@ -81,7 +81,8 @@ char[] run_pkg_config(char[] args)
 		return null;
 	}
 
-    _pkgs[args] = buf;
+    _pkgs[args] = buf[0..length-2];
+
     return buf;
 }
 
