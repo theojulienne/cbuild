@@ -9,6 +9,12 @@ import std.string;
 import std.file;
 import std.process;
 
+extern (C)
+{
+    char* getenv(char*);
+    int strlen(char*);
+}
+
 class SourceFile : Target
 {
 	char name[];
@@ -100,10 +106,21 @@ class SourceFile : Target
     {
         char[] src = act["src"];
         int i = rfind(src, ".");
-        if(!i)
-           throw new Exception( "Could not determine file type for \"" ~ src ~ "\"." );     
         char[] extension = src[i..src.length];    
-        return source_handlers[extension];    
+        char[] handler = source_handlers[extension];
+        char * ptr = getenv("CROSS_COMPILE");
+        if(!i)
+           throw new Exception( "Could not determine file type for \"" ~ src ~ "\"." );             
+        if(ptr == null)       
+            return handler;   
+        else
+        {
+            char[] compiler_prefix;
+            compiler_prefix.length = strlen(ptr);
+            for(i = 0; i < compiler_prefix.length; i++)
+                compiler_prefix[i] = ptr[i];       
+            return compiler_prefix ~ handler;
+        }    
     }
 
 	void runTool( )
