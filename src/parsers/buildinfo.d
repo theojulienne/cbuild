@@ -83,7 +83,7 @@ char[] run_pkg_config(char[] args)
 
     _pkgs[args] = buf[0..length-2];
 
-    return buf;
+    return strip(buf);
 }
 
 class BuildInfoParser
