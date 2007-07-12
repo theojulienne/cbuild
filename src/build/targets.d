@@ -66,7 +66,10 @@ abstract class Target
 	void appendCFlags( char[] flags )
 	{
 		cflags ~= " ";
-		cflags ~= flags;
+        if(flags[length-1] == '\r' || flags[length-1] == '\n')
+            cflags ~= flags[0..length-2];
+        else
+            cflags ~= flags;
 	}
 	
 	/* This is a hack. Tools/actions will handle this later. */

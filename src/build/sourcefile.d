@@ -132,7 +132,7 @@ class SourceFile : Target
 		writefln( "COMPILE %s", name );
 		
 		cmd = tool ~ " -c "~act["src"]~" -o "~act["dst"]~" "~this.getCFlags();
-		writeDebugf( ">>> %s", cmd );
+		writefln( ">>> %s", cmd );
 		
 		if ( system( cmd ) != 0 )
 			throw new Exception( tool ~ " returned error during source compile" );
