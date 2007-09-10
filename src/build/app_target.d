@@ -64,6 +64,12 @@ class ApplicationTarget : Target
 				app = "gdc";
 				break;
 			}
+			
+			if ( t.filetype == "cpp-source" )
+			{
+				app = "g++";
+				break;
+			}
 		}
 		
 		cmd = app~" "~objs~" -o "~dest~" "~this.getLDFlags();
