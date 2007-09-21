@@ -25,11 +25,13 @@ class SourceFile : Target
     
     static this()
     {
+	// longer names first
+        source_handlers[".cpp"] = "g++";
+        source_handlers[".cxx"] = "g++";
+
         source_handlers[".c"] = "gcc";
 		source_handlers[".m"] = "gcc";
         source_handlers[".d"] = "gdc";
-        source_handlers[".cpp"] = "g++";
-        source_handlers[".cxx"] = "g++";
     }
 
 	this( char[] _name )
@@ -40,6 +42,8 @@ class SourceFile : Target
 		
 		foreach ( ext, cpl; source_handlers )
 		{
+			if ( dst[$-ext.length..$] != ext )
+				continue;
 			dst = std.string.replace( dst, ext, ".o" );
 		}
 		
