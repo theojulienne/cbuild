@@ -3,4 +3,4 @@ SRCS=src/cbuild.d src/build/*.d src/parsers/*.d
 APP=cbuild.exe
 
 $(APP): $(SRCS)
-	gdc $(SRCS) -o $(APP) $(DFLAGS)
+	gdc $(SRCS) -o $(APP) $(DFLAGS)	strip $(APP)

@@ -4,3 +4,5 @@ APP=cbuild
 
 $(APP): $(SRCS)
 	gdc $(SRCS) -o $(APP) $(DFLAGS)
+	strip $(APP)
+
