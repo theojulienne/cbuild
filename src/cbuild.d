@@ -9,10 +9,13 @@ import build.app_target;
 import build.lib_target;
 import build.sourcefile;
 
+import parsers.iparser;
 import parsers.buildinfo;
+import parsers.xml;
 
 import std.stdio;
 import std.string;
+import std.file;
 
 import build.comm;
 
@@ -61,7 +64,19 @@ int main( char[][] args )
 		}
 	}
 	
-	auto bp = new BuildInfoParser( ".", "BuildInfo" );
+	IParser bp;
+	
+	try
+	{
+		bp = new XmlParser(".", "BuildInfo.xml");
+	}
+	catch(std.file.FileException)
+	{
+		bp = new BuildInfoParser(".", "BuildInfo");
+	}
+	
+	assert(bp != null);
+
 	/*
 	return 0;
 	
@@ -92,7 +107,7 @@ int main( char[][] args )
 	gt.addTarget( new SourceFile( "src/claro/graphics/widgets/stock.c") );
 	*/
 	
-	auto p = bp.proj;
+	auto p = bp.project;
 	
 	version (Debug) writeDebugf( "Processing deps and marking dirty targets..." );
 	int n;

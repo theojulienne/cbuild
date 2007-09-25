@@ -1,5 +1,7 @@
 module parsers.buildinfo;
 
+import parsers.iparser;
+
 import build.actions;
 import build.tools;
 import build.projects;
@@ -86,15 +88,18 @@ char[] run_pkg_config(char[] args)
     return strip(buf);
 }
 
-class BuildInfoParser
+class BuildInfoParser: IParser
 {
-	Project proj;
-	
-	this( char[] dir, char[] filename="BuildInfo", Project parent=null )
+	this(char[] dir, char[] filename = "BuildInfo", Project parent = null)
+	{
+		super(dir, filename, parent);
+	}
+
+	void run()
 	{
 		File file = new File;
 		
-		file.open( dir ~ "/" ~ filename, FileMode.In );
+		file.open(m_buildfile, FileMode.In);
 		
 		char[][] path;
 		char[] last_cmd;
@@ -232,42 +237,42 @@ class BuildInfoParser
 				else if ( section == "info" && cmd == "name" )
 				{
 					char[] foo = join( parms, " " );
-					proj = new Project( foo[1..foo.length-1] );
-					proj.path = getcwd( ) ~ "/" ~ dir;
-					if ( !( parent is null ) )
-						parent.addTarget( proj );
+					m_proj = new Project( foo[1..foo.length-1] );
+					m_proj.path = getcwd( ) ~ "/" ~ m_dir;
+					if ( !( m_parent is null ) )
+						m_parent.addTarget( m_proj );
 				}
 				else if ( section == "info" && cmd == "description" )
 				{
 					char[] foo = join( parms, " " );
-					writeDebugf( "%s is '%s'", proj.name, foo[1..foo.length-1] );
+					writeDebugf( "%s is '%s'", m_proj.name, foo[1..foo.length-1] );
 				}
 				else if ( section == "contains" && cmd == "recurse" )
 				{
 					writeDebugf( "Contains another project '%s' in '%s'", parms[0], parms[1] );
-					BuildInfoParser bp = new BuildInfoParser( dir~"/"~parms[1], filename, proj );
+					BuildInfoParser bp = new BuildInfoParser( m_dir~"/"~parms[1], m_filename, m_proj );
 				}
 				else if ( section == "flags" && cmd == "define" )
 				{
-					proj.appendCFlags( "-D" ~ parms[0] );
+					m_proj.appendCFlags( "-D" ~ parms[0] );
 				}
 				else if ( section == "flags" && cmd == "cflags" )
 				{
 					char[] foo = join( parms, " " );
-					proj.appendCFlags( foo[1..foo.length-1] );
+					m_proj.appendCFlags( foo[1..foo.length-1] );
 				}
 				else if ( section == "flags" && cmd == "ldflags" )
 				{
 					char[] foo = join( parms, " " );
-					proj.appendLDFlags( foo[1..foo.length-1] );
+					m_proj.appendLDFlags( foo[1..foo.length-1] );
 				}
 				else if ( section == "flags" && cmd == "pkg-config" )
 				{
 				    char[] pkgs = join( parms, " " );
 				    pkgs = pkgs[1..pkgs.length-1];
 				  				    
-				    proj.appendCFlags(run_pkg_config("--cflags " ~ pkgs));
-					proj.appendLDFlags(run_pkg_config("--libs " ~ pkgs));    
+				    m_proj.appendCFlags(run_pkg_config("--cflags " ~ pkgs));
+					m_proj.appendLDFlags(run_pkg_config("--libs " ~ pkgs));    
 				}
 				else if ( cmd == "none" )
 				{
@@ -276,16 +281,16 @@ class BuildInfoParser
 				else if ( section == "targets" && cmd == "library")
 				{
 					target = new LibraryTarget( parms[0] );
-					proj.addTarget( target );
+					m_proj.addTarget( target );
 				}
 				else if ( section == "targets" && cmd == "application")
 				{
 					target = new ApplicationTarget( parms[0] );
-					proj.addTarget( target );
+					m_proj.addTarget( target );
 				}
 				else if ( section == "sources"  )
 				{
-					//writefln( "Adding source target: %s", dir~"/"~cmd );
+					//writefln( "Adding source target: %s", m_dir~"/"~cmd );
 					target.addTarget( new SourceFile( cmd ) );
 				}
 				else if ( section == "flags" && cmd == "include" )
@@ -298,7 +303,7 @@ class BuildInfoParser
 						prefix = getcwd( ) ~ "/";
 						start++;
 					}
-					proj.appendCFlags( "-I"~prefix~foo[start..foo.length-1] );
+					m_proj.appendCFlags( "-I"~prefix~foo[start..foo.length-1] );
 				}
 				else if ( section == "flags" && cmd == "libdir" )
 				{
@@ -310,11 +315,11 @@ class BuildInfoParser
 						prefix = getcwd( ) ~ "/";
 						start++;
 					}
-					proj.appendLDFlags( "-L"~prefix~foo[start..foo.length-1] );
+					m_proj.appendLDFlags( "-L"~prefix~foo[start..foo.length-1] );
 				}
 				else if ( section == "flags" && cmd == "library" )
 				{
-					proj.appendLDFlags( "-l"~parms[0][1..parms[0].length-1] );
+					m_proj.appendLDFlags( "-l"~parms[0][1..parms[0].length-1] );
 				}
 				else if ( ssection == "options" )
 				{
