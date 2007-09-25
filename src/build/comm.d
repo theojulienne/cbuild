@@ -18,5 +18,6 @@ void writeDebugf(...)
 		}
 		
 		std.format.doFormat(&putc, _arguments, _argptr);
+		putc('\n');
 	}
 }

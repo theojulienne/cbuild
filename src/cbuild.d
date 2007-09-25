@@ -66,16 +66,22 @@ int main( char[][] args )
 	
 	IParser bp;
 	
+	writeDebugf("Determining build file type...");
+
 	try
 	{
 		bp = new XmlParser(".", "BuildInfo.xml");
+		writeDebugf("Processing XML build file...");
 	}
 	catch(std.file.FileException)
 	{
 		bp = new BuildInfoParser(".", "BuildInfo");
+		writeDebugf("Processing CBuild build file...");
 	}
 	
 	assert(bp != null);
+
+	bp.run();
 
 	/*
 	return 0;
