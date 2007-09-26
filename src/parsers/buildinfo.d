@@ -251,6 +251,7 @@ class BuildInfoParser: IParser
 				{
 					writeDebugf( "Contains another project '%s' in '%s'", parms[0], parms[1] );
 					BuildInfoParser bp = new BuildInfoParser( m_dir~"/"~parms[1], m_filename, m_proj );
+					bp.run( );
 				}
 				else if ( section == "flags" && cmd == "define" )
 				{
